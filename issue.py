@@ -1,22 +1,31 @@
 import requests
 
+
 class Issue(object):
-    def __init__(self, issue_title, requester_fas_name):
-        self._issue_title = self._skip_unnecessary_symbols(issue_title)
+    def __init__(self, issue_title, requester_fas_name, issue_text, issue_url):
+        self.issue_text = issue_text
+        self.issue_url = issue_url
+        self.is_requester_who_opened_issue = self._analyze_issue_text()
+        self.issue_title = self._skip_unnecessary_symbols(issue_title)
         self._git_url = None
         self.package_name = None
         self._get_package_name()
         self.requester_fas_name = requester_fas_name
 
-    def _skip_unnecessary_symbols(self, issue_title):
+    def _analyze_issue_text(self):
+        keywords = ["sig", "fas"]
+        self.issue_text = self._skip_unnecessary_symbols(self.issue_text)
+        return not any(keyword in self.issue_text for keyword in keywords)
+
+    def _skip_unnecessary_symbols(self, text):
         skips = [".", ", ", ":", ";", "'", '"']
         for ch in skips:
-            issue_title = issue_title.replace(ch, "")
-        return issue_title
+            text = text.replace(ch, "")
+        return text
 
     def _get_package_name(self):
         package_prefixes = ("rpms/", "flatpaks/", "modules/", "tests/", "container/")
-        issue_title_without_keyword = self._issue_title.split("stalled epel package ")[1]
+        issue_title_without_keyword = self.issue_title.split("stalled epel package ")[1]
         list_of_words_in_title = issue_title_without_keyword.split(" ")
         for word in list_of_words_in_title:
             if word.startswith(package_prefixes):
@@ -48,6 +57,3 @@ class Issue(object):
             return True
         else:
             return False
-
-
-
