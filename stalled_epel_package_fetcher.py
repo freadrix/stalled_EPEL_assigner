@@ -20,12 +20,12 @@ class StalledEpelPackageFetcher(object):
             issues = response.json()["issues"]
             # print(issues)
             for issue in issues:
-                issue_title = issue["title"].lower()
+                issue_title = issue["title"]
                 if self._is_contain_keyword(issue_title):
-                    issue_requester = issue["user"]["name"]
+                    issue_opener = issue["user"]["name"]
                     issue_url = issue["full_url"]
                     issue_text = issue["content"].lower()
-                    issue = Issue(issue_title, issue_requester, issue_text, issue_url)
+                    issue = Issue(issue_title, issue_opener, issue_text, issue_url)
                     list_of_issues.append(issue)
                 self._params["page"] += 1
         return list_of_issues
@@ -36,4 +36,4 @@ class StalledEpelPackageFetcher(object):
         return number_of_pages
 
     def _is_contain_keyword(self, issue_title):
-        return self._keyword in issue_title
+        return self._keyword in issue_title.lower()
