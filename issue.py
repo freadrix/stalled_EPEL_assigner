@@ -1,5 +1,3 @@
-import struct
-
 import requests
 from requests_kerberos import HTTPKerberosAuth
 
