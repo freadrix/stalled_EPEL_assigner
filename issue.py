@@ -22,13 +22,13 @@ class Issue(object):
     def __init__(self, issue_title, unprocessed_package_name, issue_opener, issue_text, issue_url):
         self.issue_text = skip_unnecessary_symbols(make_text_lower(issue_text))
         self.is_requester_found = False
-        self.requester_name = self._get_requester_name()
+        self.requester_name = self._get_requester_name(issue_opener)
         self.issue_url = issue_url
         self._issue_title = issue_title
         self.package_name = self._get_package_name(unprocessed_package_name)
         self._git_url = None
 
-    def _get_requester_name(self):
+    def _get_requester_name(self, issue_opener):
         list_of_words_in_text = self.issue_text.split(" ")
         list_of_words = strip_each_element(list_of_words_in_text)
         index = list_of_words.index("requesting")
@@ -36,7 +36,7 @@ class Issue(object):
         if fas_name_index != 0:
             return list_of_words[fas_name_index]
         else:
-            return "FAS is not found"
+            return issue_opener
 
     def _get_fas_name_index(self, index, list_of_words):
         for index_offset in range(1, 4):
@@ -73,14 +73,14 @@ class Issue(object):
                     return package_name
         return None
 
-    def _try_different_prefixes(self, package_name, prefixes):
-        for prefix in prefixes:
-            package_name_with_prefix = prefix + package_name
-            self._get_git_url(package_name_with_prefix)
-            if self._git_url:
-                self.package_name = package_name_with_prefix
-                return True
-        return False
+    # def _try_different_prefixes(self, package_name, prefixes):
+    #     for prefix in prefixes:
+    #         package_name_with_prefix = prefix + package_name
+    #         self._get_git_url(package_name_with_prefix)
+    #         if self._git_url:
+    #             self.package_name = package_name_with_prefix
+    #             return True
+    #     return False
 
     def _get_git_url(self, package_name):
         git_url = "https://src.fedoraproject.org/" + package_name + ".git"
