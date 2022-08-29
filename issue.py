@@ -36,10 +36,10 @@ class Issue(object):
         if fas_name_index != 0:
             return list_of_words[fas_name_index]
         else:
-            return issue_opener
+            return None
 
     def _get_fas_name_index(self, index, list_of_words):
-        for index_offset in range(1, 4):
+        for index_offset in range(1, 5):
             new_index = index + index_offset
             fas_name = list_of_words[new_index]
             if self._is_group_name(fas_name) or self._is_fas_name(fas_name) and len(fas_name) > 4:
@@ -72,15 +72,6 @@ class Issue(object):
                 if self._is_git_url_valid():
                     return package_name
         return None
-
-    # def _try_different_prefixes(self, package_name, prefixes):
-    #     for prefix in prefixes:
-    #         package_name_with_prefix = prefix + package_name
-    #         self._get_git_url(package_name_with_prefix)
-    #         if self._git_url:
-    #             self.package_name = package_name_with_prefix
-    #             return True
-    #     return False
 
     def _get_git_url(self, package_name):
         git_url = "https://src.fedoraproject.org/" + package_name + ".git"

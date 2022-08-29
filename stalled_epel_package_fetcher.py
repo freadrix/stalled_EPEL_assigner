@@ -13,7 +13,9 @@ class StalledEpelPackageFetcher(object):
             "per_page": 20
         }
         self._keyword_for_single_issue = "stalled epel package:"
+        self._keywords_for_single_issue = ["stalled", "epel", "package"]
         self._keyword_for_multiple_issues = "stalled epel packages:"
+        self._keywords_for_multiple_issues = ["stalled", "epel", "packages"]
         self._api_endpoint = "https://pagure.io/api/0/releng/issues"
 
     def get_issues(self):
@@ -88,7 +90,9 @@ class StalledEpelPackageFetcher(object):
         return number_of_pages
 
     def _is_contain_keyword_for_single_issue(self, issue_title):
+        # return all(keyword in issue_title.lower() for keyword in self._keywords_for_single_issue)
         return self._keyword_for_single_issue in issue_title.lower()
 
     def _is_contain_keyword_for_multiple_issues(self, issue_title):
+        # return all(keyword in issue_title.lower() for keyword in self._keywords_for_multiple_issues)
         return self._keyword_for_multiple_issues in issue_title.lower()

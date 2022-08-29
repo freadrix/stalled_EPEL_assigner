@@ -1,19 +1,44 @@
 from stalled_epel_package_fetcher import StalledEpelPackageFetcher
 from issue import Issue
+from assigner import Assigner
 import requests
 from requests_kerberos import HTTPKerberosAuth
 import os
 
 
 def main():
+    # package_name1 = "rpms/lollypopis"
+    # package_name2 = "rpms/lollypop"
+    # fas_name1 = "popka"
+    # fas_name2 = "amedvede"
+    # assigner = Assigner(package_name=package_name1, fas=fas_name1)
+    # endpoint = "https://src.fedoraproject.org/_dg/bzoverrides/rpms/abe"
+    # response = requests.get(url=endpoint)
+    # print(response.status_code)
+    # text = response.json()
+    # print(text)
+    # fetcher = StalledEpelPackageFetcher()
+    # stalled_epel_issues = fetcher.get_issues()
+    # for issue in stalled_epel_issues:
+    #     print(issue.requester_name)
+    #     print(issue.is_requester_found)
+    #     print(issue.package_name)
+    #     print(issue.issue_url)
+    #     print("\n")
+    file_object = open("issues_didnt_process.txt", "w")
     fetcher = StalledEpelPackageFetcher()
     stalled_epel_issues = fetcher.get_issues()
     for issue in stalled_epel_issues:
-        print(issue.requester_name)
-        print(issue.is_requester_found)
-        print(issue.package_name)
-        print(issue.issue_url)
-        # print("\n")
+        if issue.package_name and issue.is_requester_found:
+            # assigner = Assigner(package_name=issue.package_name, fas=issue.requester_name)
+        else:
+            is_requester_found = issue.requester_name is None
+            is_package_name_found = issue.package_name is None
+            file_object.write(f"Issue with url {issue.issue_url}\n"
+                              f"had a problem with processing because:\n"
+                              f"is requester found: {is_requester_found}\n"
+                              f"is package name found: {is_package_name_found}")
+    file_object.close()
 
 #     issue_title = "Stalled EPEL package: perl-Text-CSV"
 #     issue_opener = "robert"
