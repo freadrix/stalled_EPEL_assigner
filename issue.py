@@ -15,6 +15,7 @@ def strip_each_element(list_of_words):
 
 
 class Issue(object):
+    """ Process single issue and get all info about it. """
     def __init__(self, issue_title, unprocessed_package_name, issue_opener, issue_text, issue_url):
         self.issue_text = skip_unnecessary_symbols(issue_text.lower())
         self.is_requester_found = False
@@ -59,16 +60,16 @@ class Issue(object):
         return response.status_code == 200
 
     def _get_package_name(self, unprocessed_package_name):
-        package_prefixes = ("rpms/", "flatpaks/", "modules/", "tests/", "container/")
-        if unprocessed_package_name.startswith(package_prefixes):
+        package_namespaces = ("rpms/", "flatpaks/", "modules/", "tests/", "container/")
+        if unprocessed_package_name.startswith(package_namespaces):
             self._get_git_url(unprocessed_package_name)
             if self._is_git_url_valid():
                 return unprocessed_package_name
         elif unprocessed_package_name is "Unhandled_issue":
             return None
         else:
-            for prefix in package_prefixes:
-                package_name = prefix + unprocessed_package_name
+            for namespace in package_namespaces:
+                package_name = namespace + unprocessed_package_name
                 self._get_git_url(package_name)
                 if self._is_git_url_valid():
                     return package_name

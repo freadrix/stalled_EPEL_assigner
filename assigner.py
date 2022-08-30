@@ -2,6 +2,7 @@ import requests
 
 
 class Assigner(object):
+    """ Assigner to bz. """
 
     def __init__(self, package_name, fas):
         self.endpoint = "https://src.fedoraproject.org/_dg/bzoverrides/" + package_name

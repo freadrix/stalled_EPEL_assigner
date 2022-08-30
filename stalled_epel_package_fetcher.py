@@ -5,6 +5,7 @@ from issue import skip_unnecessary_symbols, strip_each_element
 
 
 class StalledEpelPackageFetcher(object):
+    """ Fetcher releng issues. """
     def __init__(self):
         self._list_of_issue_objs = []
         self._issue = None
@@ -18,6 +19,7 @@ class StalledEpelPackageFetcher(object):
         self._api_endpoint = "https://pagure.io/api/0/releng/issues"
 
     def get_issues(self):
+        """ Observe all pages and test all issues. """
         number_of_pages = self._get_number_of_pages()
         for page in range(5):  # for _ in range(number_of_pages)
             self._params["page"] = page + 1
@@ -30,6 +32,7 @@ class StalledEpelPackageFetcher(object):
         return self._list_of_issue_objs
 
     def _select_type_of_issue(self):
+        """ Select type of issue. """
         issue_title = self._issue["title"]
         if self._is_contain_words_from_keyword(issue_title):
             if self._is_contain_keyword_for_single_issue(issue_title):
@@ -37,9 +40,10 @@ class StalledEpelPackageFetcher(object):
             elif self._is_contain_keyword_for_multiple_issues(issue_title):
                 self._process_issues()
             else:
-                pass
+                self._unhandled_issue()
 
     def _process_issue(self):
+        """ Process issue that contain single EPEL package. """
         issue_title = self._issue["title"]
         issue_opener = self._issue["user"]["name"]
         issue_url = self._issue["full_url"]
@@ -49,6 +53,7 @@ class StalledEpelPackageFetcher(object):
         self._list_of_issue_objs.append(issue_obj)
 
     def _process_issues(self):
+        """ Process issue that contain multiple EPEL packages. """
         issue_title = self._issue["title"]
         issue_opener = self._issue["user"]["name"]
         issue_url = self._issue["full_url"]
@@ -68,6 +73,7 @@ class StalledEpelPackageFetcher(object):
             self._list_of_issue_objs.append(issue_obj)
 
     def _unhandled_issue(self):
+        """ Process issue that can't be handled. """
         issue_title = self._issue["title"]
         issue_opener = "Unhandled_issue"
         issue_url = self._issue["full_url"]
