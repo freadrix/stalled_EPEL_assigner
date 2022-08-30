@@ -37,7 +37,7 @@ def main():
             file_object.write(f"Issue with url {issue.issue_url}\n"
                               f"had a problem with processing because:\n"
                               f"is requester found: {is_requester_found}\n"
-                              f"is package name found: {is_package_name_found}")
+                              f"is package name found: {is_package_name_found}\n\n")
     file_object.close()
 
 #     issue_title = "Stalled EPEL package: perl-Text-CSV"

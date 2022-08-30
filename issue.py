@@ -2,10 +2,6 @@ import requests
 from requests_kerberos import HTTPKerberosAuth
 
 
-def make_text_lower(text):
-    return text.lower()
-
-
 def skip_unnecessary_symbols(text):
     skips = [".", ", ", ":", ";", "'", '"', "@", "`"]
     for ch in skips:
@@ -20,7 +16,7 @@ def strip_each_element(list_of_words):
 
 class Issue(object):
     def __init__(self, issue_title, unprocessed_package_name, issue_opener, issue_text, issue_url):
-        self.issue_text = skip_unnecessary_symbols(make_text_lower(issue_text))
+        self.issue_text = skip_unnecessary_symbols(issue_text.lower())
         self.is_requester_found = False
         self.requester_name = self._get_requester_name(issue_opener)
         self.issue_url = issue_url
@@ -31,9 +27,12 @@ class Issue(object):
     def _get_requester_name(self, issue_opener):
         list_of_words_in_text = self.issue_text.split(" ")
         list_of_words = strip_each_element(list_of_words_in_text)
-        index = list_of_words.index("requesting")
+        try:
+            index = list_of_words.index("requesting")
+        except ValueError:
+            return None
         fas_name_index = self._get_fas_name_index(index, list_of_words)
-        if fas_name_index != 0:
+        if fas_name_index is not None:
             return list_of_words[fas_name_index]
         else:
             return None
@@ -45,7 +44,7 @@ class Issue(object):
             if self._is_group_name(fas_name) or self._is_fas_name(fas_name) and len(fas_name) > 4:
                 self.is_requester_found = True
                 return new_index
-        return 0
+        return None
 
     @staticmethod
     def _is_fas_name(name):
@@ -65,6 +64,8 @@ class Issue(object):
             self._get_git_url(unprocessed_package_name)
             if self._is_git_url_valid():
                 return unprocessed_package_name
+        elif unprocessed_package_name is "Unhandled_issue":
+            return None
         else:
             for prefix in package_prefixes:
                 package_name = prefix + unprocessed_package_name

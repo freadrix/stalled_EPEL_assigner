@@ -1,7 +1,7 @@
 import requests
 import re
 from issue import Issue
-from issue import skip_unnecessary_symbols, make_text_lower, strip_each_element
+from issue import skip_unnecessary_symbols, strip_each_element
 
 
 class StalledEpelPackageFetcher(object):
@@ -12,10 +12,9 @@ class StalledEpelPackageFetcher(object):
             "status": "Closed",
             "per_page": 20
         }
+        self._list_of_words_in_keyword = ["stalled", "epel", "package"]
         self._keyword_for_single_issue = "stalled epel package:"
-        self._keywords_for_single_issue = ["stalled", "epel", "package"]
         self._keyword_for_multiple_issues = "stalled epel packages:"
-        self._keywords_for_multiple_issues = ["stalled", "epel", "packages"]
         self._api_endpoint = "https://pagure.io/api/0/releng/issues"
 
     def get_issues(self):
@@ -32,10 +31,13 @@ class StalledEpelPackageFetcher(object):
 
     def _select_type_of_issue(self):
         issue_title = self._issue["title"]
-        if self._is_contain_keyword_for_single_issue(issue_title):
-            self._process_issue()
-        elif self._is_contain_keyword_for_multiple_issues(issue_title):
-            self._process_issues()
+        if self._is_contain_words_from_keyword(issue_title):
+            if self._is_contain_keyword_for_single_issue(issue_title):
+                self._process_issue()
+            elif self._is_contain_keyword_for_multiple_issues(issue_title):
+                self._process_issues()
+            else:
+                pass
 
     def _process_issue(self):
         issue_title = self._issue["title"]
@@ -65,6 +67,15 @@ class StalledEpelPackageFetcher(object):
             issue_obj = Issue(issue_title, package_name, issue_opener, issue_text, issue_url)
             self._list_of_issue_objs.append(issue_obj)
 
+    def _unhandled_issue(self):
+        issue_title = self._issue["title"]
+        issue_opener = "Unhandled_issue"
+        issue_url = self._issue["full_url"]
+        issue_text = "Unhandled_issue"
+        unprocessed_package_name = "Unhandled_issue"
+        issue_obj = Issue(issue_title, unprocessed_package_name, issue_opener, issue_text, issue_url)
+        self._list_of_issue_objs.append(issue_obj)
+
     @staticmethod
     def _get_package_names(text, amount_of_packages, package_prefix):
         list_of_package_names = []
@@ -89,10 +100,11 @@ class StalledEpelPackageFetcher(object):
         number_of_pages = response.json()["pagination"]["pages"]
         return number_of_pages
 
+    def _is_contain_words_from_keyword(self, issue_title):
+        return all(word in issue_title.lower() for word in self._list_of_words_in_keyword)
+
     def _is_contain_keyword_for_single_issue(self, issue_title):
-        # return all(keyword in issue_title.lower() for keyword in self._keywords_for_single_issue)
         return self._keyword_for_single_issue in issue_title.lower()
 
     def _is_contain_keyword_for_multiple_issues(self, issue_title):
-        # return all(keyword in issue_title.lower() for keyword in self._keywords_for_multiple_issues)
         return self._keyword_for_multiple_issues in issue_title.lower()
