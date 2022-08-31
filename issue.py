@@ -15,13 +15,13 @@ def strip_each_element(list_of_words):
 
 
 class Issue(object):
-    """ Process single issue and get all info about it. """
+    """ Contain info about single issue """
     def __init__(self, issue_title, unprocessed_package_name, issue_opener, issue_text, issue_url):
         self.issue_text = skip_unnecessary_symbols(issue_text.lower())
         self.is_requester_found = False
         self.requester_name = self._get_requester_name(issue_opener)
         self.issue_url = issue_url
-        self._issue_title = issue_title
+        self.issue_title = issue_title
         self.package_name = self._get_package_name(unprocessed_package_name)
         self._git_url = None
 
@@ -65,7 +65,7 @@ class Issue(object):
             self._get_git_url(unprocessed_package_name)
             if self._is_git_url_valid():
                 return unprocessed_package_name
-        elif unprocessed_package_name is "Unhandled_issue":
+        elif unprocessed_package_name == "Unhandled_issue":
             return None
         else:
             for namespace in package_namespaces:

@@ -74,7 +74,7 @@ class StalledEpelPackageFetcher(object):
 
     def _unhandled_issue(self):
         """ Process issue that can't be handled. """
-        issue_title = self._issue["title"]
+        issue_title = self._issue["title"] + " Unhandled_issue"
         issue_opener = "Unhandled_issue"
         issue_url = self._issue["full_url"]
         issue_text = "Unhandled_issue"
