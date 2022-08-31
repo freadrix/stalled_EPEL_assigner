@@ -12,8 +12,7 @@ def main():
     stalled_epel_issues = fetcher.get_issues()
     for issue in stalled_epel_issues:
         if issue.package_name and issue.is_requester_found:
-            pass
-            # Assigner(package_name=issue.package_name, fas=issue.requester_name)
+            Assigner(package_name=issue.package_name, fas=issue.requester_name)
         else:
             print(issue.issue_title)
             print(issue.requester_name)
